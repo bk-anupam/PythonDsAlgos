@@ -1,7 +1,7 @@
-import os
 import abc
 import sys
 from src.algorithms.graphs.WeightedEdge import WeightedEdge
+from src.algorithms.graphs.PrimMST import PrimMST
 
 
 class EdgeWeightedGraph(abc.ABC):
@@ -17,7 +17,7 @@ class EdgeWeightedGraph(abc.ABC):
         pass
 
     def get_out_edges(self, vertex):
-        return self._adjList[vertex]
+        return self._adj_list[vertex]
 
     @abc.abstractmethod
     def add_edge(self):
@@ -59,7 +59,7 @@ class UndirectedEWG(EdgeWeightedGraph):
             counter = counter + 1
 
     def add_edge(self, weighted_edge):
-        u = weighted_edge.either()
+        u = weighted_edge.either
         v = weighted_edge.other(u)
 
         if u not in self._adj_list:
@@ -91,8 +91,11 @@ class UndirectedEWG(EdgeWeightedGraph):
 
 def main():
     ewg = UndirectedEWG(sys.argv[1])
-    print("No of vertices: " + ewg.get_num_vertices())
-    print("No of edges: " + ewg.get_num_edges())
+    prim_mst = PrimMST(ewg)
+    for edge in prim_mst.edge_to:
+        print(edge)
+    print("No of vertices: " + str(ewg.get_num_vertices()))
+    print("No of edges: " + str(ewg.get_num_edges()))
 
 
 if __name__ == "__main__":

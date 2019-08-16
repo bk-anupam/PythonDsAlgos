@@ -9,6 +9,7 @@ class WeightedEdge:
         self.__second_vertex = second_vertex
         self.weight = weight
 
+    @property
     def either(self):
         return self.__first_vertex
 
@@ -31,3 +32,7 @@ class WeightedEdge:
 
     def __hash__(self):
         return hash((self.__first_vertex, self.__second_vertex, self.weight))
+
+    def __str__(self):
+        return "first_vertex: {}, second_vertex: {}, weight: {}".format(self.__first_vertex,
+                                                                        self.__second_vertex, self.weight)
