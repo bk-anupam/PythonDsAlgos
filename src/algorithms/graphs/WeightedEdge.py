@@ -10,10 +10,10 @@ class WeightedEdge:
         self.weight = weight
 
     @property
-    def either(self):
+    def source(self):
         return self.__first_vertex
 
-    def other(self, vertex):
+    def destination(self, vertex):
         if self.__first_vertex == vertex:
             return self.__second_vertex
         else:

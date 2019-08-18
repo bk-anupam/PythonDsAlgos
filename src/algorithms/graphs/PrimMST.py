@@ -1,5 +1,7 @@
 import heapq
+import sys
 from src.algorithms.graphs.WeightedEdge import WeightedEdge
+from src.algorithms.graphs.EdgeWeightedGraph import UndirectedEWG
 
 
 class PrimMST:
@@ -24,24 +26,24 @@ class PrimMST:
                 self.edge_to[vertex] = WeightedEdge(vertex, -1, float('inf'))
 
     def __visit(self, weighted_edge):
-        self.visited_vertices.append(weighted_edge.either)
+        self.visited_vertices.append(weighted_edge.source)
         for visited_vertex in self.visited_vertices:
             for crossing_edge in [edge for edge in self.ewg.get_out_edges(visited_vertex)
                                   if self.__is_crossing_edge(edge)]:
-                other_vertex = crossing_edge.other(visited_vertex)
+                other_vertex = crossing_edge.destination(visited_vertex)
                 if crossing_edge.weight < self.dist_to[other_vertex]:
                     self.dist_to[other_vertex] = crossing_edge.weight
                     self.edge_to[other_vertex] = crossing_edge
-                    try:
-                        self.__vertex_minweight_pq.remove(weighted_edge)
-                    except ValueError:
-                        pass
+                    # try:
+                    #     self.__vertex_minweight_pq.remove(weighted_edge)
+                    # except ValueError:
+                    #     pass
                     self.__vertex_minweight_pq.append(WeightedEdge(other_vertex, visited_vertex, crossing_edge.weight))
                     heapq.heapify(self.__vertex_minweight_pq)
 
     def __is_crossing_edge(self, edge):
-        u = edge.either
-        v = edge.other(u)
+        u = edge.source
+        v = edge.destination(u)
         if u in self.visited_vertices and v in self.visited_vertices:
             return False
         else:
@@ -50,3 +52,25 @@ class PrimMST:
     @property
     def mst(self):
         return self.edge_to
+
+
+def main():
+    arg = sys.argv[1]
+    int_arg = None
+    try:
+        int_arg = int(arg)
+    except ValueError:
+        pass
+    if int_arg is None:
+        ewg = UndirectedEWG(arg)
+    else:
+        ewg = UndirectedEWG(int_arg)
+    prim_mst = PrimMST(ewg)
+    for edge in prim_mst.mst:
+        print(edge)
+    print("No of vertices: " + str(ewg.get_num_vertices()))
+    print("No of edges: " + str(ewg.get_num_edges()))
+
+
+if __name__ == "__main__":
+    main()
