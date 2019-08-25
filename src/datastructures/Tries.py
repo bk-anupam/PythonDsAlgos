@@ -9,9 +9,9 @@ class TrieST:
         self.key_count = 0
 
     def get(self, key):
-        return self.get(self.root, key, 0)
+        return self.__get(self.root, key, 0)
 
-    def get(self, node, key, d):
+    def __get(self, node, key, d):
         """
         Recursive function that searches for a key in a subtrie
         :param node: Subtrie under which to search for the key
@@ -23,13 +23,13 @@ class TrieST:
             return None
         if len(key) == d:
             return node
-        return self.get(node.next[ord(key[d])], key, d+1)
+        return self.__get(node.next[ord(key[d])], key, d+1)
 
     def put(self, key, value):
-        root = self.put(self.root, key, value, 0)
+        root = self.__put(self.root, key, value, 0)
         return root
 
-    def put(self, node, key, value, d):
+    def __put(self, node, key, value, d):
         # node: Subtrie under which to insert the key value pair
         if node is None:
             node = self.Node(self.radix)
@@ -37,7 +37,7 @@ class TrieST:
             node.value = value
             self.key_count += 1
             return node
-        node.next[ord(key[d])] = self.put(node.next[ord(key[d])], key, value, d+1)
+        node.next[ord(key[d])] = self.__put(node.next[ord(key[d])], key, value, d+1)
         return node
 
     def contains(self, key):
@@ -59,15 +59,15 @@ class TrieST:
 
     def delete(self, key):
         """Removes a key and its associated value"""
-        self.root = self.delete(self.root, key, 0)
+        self.root = self.__delete(self.root, key, 0)
 
-    def delete(self, node, key, key_curr_index):
+    def __delete(self, node, key, key_curr_index):
         if node is None:
             return None
         if key_curr_index == len(key):
             node.value = None
         else:
-            node.next[ord(key[key_curr_index])] = self.delete(node.next[ord(key[key_curr_index])], key, key_curr_index+1)
+            node.next[ord(key[key_curr_index])] = self.__delete(node.next[ord(key[key_curr_index])], key, key_curr_index+1)
         if node.value is not None:
             return node
         for i in range(self.radix):
@@ -83,9 +83,9 @@ class TrieST:
 
     def longest_prefix_of(self, str_input):
         """Returns the longest key that is a prefix of input"""
-        return self.search(self.root, str_input, 0, 0)
+        return self.__search(self.root, str_input, 0, 0)
 
-    def search(self, node, str_input, key_curr_index, length):
+    def __search(self, node, str_input, key_curr_index, length):
         """
         Recursive function that returns length of the key that is the longest prefix of str_input
         :param node: The subtrie under which to search the key
@@ -100,7 +100,7 @@ class TrieST:
             length = key_curr_index
         if key_curr_index == length:
             return length
-        return self.search(node.next[ord(str_input[key_curr_index])], key_curr_index+1, length)
+        return self.__search(node.next[ord(str_input[key_curr_index])], key_curr_index+1, length)
 
     def collect_keys(self, node, key, queue):
         if node is None:
@@ -115,3 +115,16 @@ class TrieST:
             self.value = None
             self.next = [None for i in range(radix)]
 
+
+def main():
+    trie = TrieST()
+    test_str = "she sells sea shells by the sea shore"
+    str_arr = test_str.split(" ")
+    for word in str_arr:
+        trie.put(word, 1)
+    val = trie.get("sea")
+    print("test")
+
+
+if __name__ == "__main__":
+    main()
