@@ -1,3 +1,31 @@
+import logging
+import json
+import sys
+import datetime
+import yaml
+import logging.config
+
+with open(r"D:\Anupam_Technical\Code\PythonCode\DsAlgosPython\config\LoggingConfig.yml", 'r') as config:
+    config = yaml.safe_load(config)
+    logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
+
+
+def configure_logging():
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger(__name__)
+    file_handler = logging.FileHandler("SpellChecker.log")
+    file_handler.setLevel(logging.DEBUG)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+    log_format = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
+    console_handler.setFormatter(log_format)
+    file_handler.setFormatter(log_format)
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+    logger.debug("Test log")
+
+
 class TrieST:
     def __init__(self):
         """We are taking extended ASCII table which consists of 256 characters as the radix value
@@ -23,7 +51,7 @@ class TrieST:
             return None
         if len(key) == d:
             return node
-        return self.__get(node.next[ord(key[d])], key, d+1)
+        return self.__get(node.next[ord(key[d])], key, d + 1)
 
     def put(self, key, value):
         root = self.__put(self.root, key, value, 0)
@@ -37,7 +65,7 @@ class TrieST:
             node.value = value
             self.key_count += 1
             return node
-        node.next[ord(key[d])] = self.__put(node.next[ord(key[d])], key, value, d+1)
+        node.next[ord(key[d])] = self.__put(node.next[ord(key[d])], key, value, d + 1)
         return node
 
     def contains(self, key):
@@ -67,7 +95,8 @@ class TrieST:
         if key_curr_index == len(key):
             node.value = None
         else:
-            node.next[ord(key[key_curr_index])] = self.__delete(node.next[ord(key[key_curr_index])], key, key_curr_index+1)
+            node.next[ord(key[key_curr_index])] = self.__delete(node.next[ord(key[key_curr_index])], key,
+                                                                key_curr_index + 1)
         if node.value is not None:
             return node
         for i in range(self.radix):
@@ -100,7 +129,7 @@ class TrieST:
             length = key_curr_index
         if key_curr_index == length:
             return length
-        return self.__search(node.next[ord(str_input[key_curr_index])], key_curr_index+1, length)
+        return self.__search(node.next[ord(str_input[key_curr_index])], key_curr_index + 1, length)
 
     def collect_keys(self, node, key, queue):
         if node is None:
@@ -108,7 +137,7 @@ class TrieST:
         if node.value is not None:
             queue.append(key)
         for i in range(self.radix):
-            self.collect_keys(node.next[i], key+chr(i), queue)
+            self.collect_keys(node.next[i], key + chr(i), queue)
 
     class Node:
         def __init__(self, radix):
@@ -117,13 +146,29 @@ class TrieST:
 
 
 def main():
+    file_name = sys.argv[1]
     trie = TrieST()
-    test_str = "she sells sea shells by the sea shore"
-    str_arr = test_str.split(" ")
-    for word in str_arr:
+    logger.info("Inside  main")
+    counter = 0
+    start_time = datetime.datetime.now()
+    for word in get_dict_words(file_name):
         trie.put(word, 1)
-    val = trie.get("sea")
-    print("test")
+        counter += 1
+        if counter % 5000 == 0:
+            end_time = datetime.datetime.now()
+            time_diff = end_time - start_time
+            logger.info(
+                "Time taken for inserting {} records is {} seconds".format(counter, str(time_diff.total_seconds())))
+    logger.info("Inserted all dictionary words in the trie")
+    val = trie.get("shore")
+    logger.info("found shore")
+
+
+def get_dict_words(file_name):
+    with open(file_name, 'r') as words_file:
+        dict_words = json.load(words_file)
+    words_list = [key for (key, value) in dict_words.items()]
+    return words_list
 
 
 if __name__ == "__main__":
