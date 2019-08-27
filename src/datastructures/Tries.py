@@ -5,25 +5,25 @@ import datetime
 import yaml
 import logging.config
 
-with open(r"D:\Anupam_Technical\Code\PythonCode\DsAlgosPython\config\LoggingConfig.yml", 'r') as config:
+with open(r"./../../config/LoggingConfig.yml", 'r') as config:
     config = yaml.safe_load(config)
     logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
 
 
-def configure_logging():
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
-    file_handler = logging.FileHandler("SpellChecker.log")
-    file_handler.setLevel(logging.DEBUG)
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
-    log_format = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
-    console_handler.setFormatter(log_format)
-    file_handler.setFormatter(log_format)
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-    logger.debug("Test log")
+# def configure_logging():
+#     logging.basicConfig(level=logging.DEBUG)
+#     logger = logging.getLogger(__name__)
+#     file_handler = logging.FileHandler("SpellChecker.log")
+#     file_handler.setLevel(logging.DEBUG)
+#     console_handler = logging.StreamHandler()
+#     console_handler.setLevel(logging.DEBUG)
+#     log_format = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
+#     console_handler.setFormatter(log_format)
+#     file_handler.setFormatter(log_format)
+#     logger.addHandler(console_handler)
+#     logger.addHandler(file_handler)
+#     logger.debug("Test log")
 
 
 class TrieST:
@@ -107,7 +107,7 @@ class TrieST:
     def keys_with_prefix(self, prefix):
         """Returns all the keys that start with a specific prefix"""
         queue = []
-        self.collect_keys(self.get(self.root, prefix, 0), prefix, queue)
+        self.collect_keys(self.__get(self.root, prefix, 0), prefix, queue)
         return queue
 
     def longest_prefix_of(self, str_input):
@@ -160,8 +160,12 @@ def main():
             logger.info(
                 "Time taken for inserting {} records is {} seconds".format(counter, str(time_diff.total_seconds())))
     logger.info("Inserted all dictionary words in the trie")
-    val = trie.get("shore")
-    logger.info("found shore")
+    print('Type X for exiting the loop')
+    word = input('Enter word initials: ')
+    while word != "X":
+        auto_complete(trie, word)
+        print('Type X for exiting the loop')
+        word = input('Enter word initials: ')
 
 
 def get_dict_words(file_name):
@@ -169,6 +173,14 @@ def get_dict_words(file_name):
         dict_words = json.load(words_file)
     words_list = [key for (key, value) in dict_words.items()]
     return words_list
+
+
+def auto_complete(trie, word):
+    matching_words = trie.keys_with_prefix(word)
+    if matching_words is None or len(matching_words) == 0:
+        print("No matching words found")
+    print("Matching words starting with " + word + " are:")
+    print(', '.join(matching_words))
 
 
 if __name__ == "__main__":
