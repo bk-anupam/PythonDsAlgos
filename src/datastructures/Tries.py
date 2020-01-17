@@ -146,7 +146,7 @@ class TrieST:
 
 
 def main():
-    file_name = sys.argv[1]
+    file_name = "./../../data/" + sys.argv[1]
     trie = TrieST()
     logger.info("Inside  main")
     counter = 0
