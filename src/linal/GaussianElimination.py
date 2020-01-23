@@ -21,21 +21,19 @@ def gaussian_elimination(data):
     n_rows, n_cols = l_data.shape
     lower_triangular = np.eye(n_rows, n_cols)
     row_pivots = {}
-    i = 0
-    j = 0
+    i = j = 0
     while i < n_rows-1 and j < n_cols:
         # perform gaussian elimination to render an upper triangular matrix with the elements below the diagonal
         # elements in each column containing the multipliers
         alpha11 = l_data[i][j]
-        # If alpha11 is 0, then row pivoting needs to be done using permutation matrices to prevent divide by zero error
-        # This is done by swapping row i with the row next first row that has a non zero entry in column j
+        # If alpha11 is 0, then row pivoting (swapping) needs to be done to prevent divide by zero error
+        # This is done by swapping row i with the next first row that has a non zero entry in column j
         if alpha11 == 0:
             first_nonzero_index = get_swap_index(i, j, l_data)
             print("row pivot i={}, first_nonzero_index > i = {}".format(i, first_nonzero_index))
             row_pivots.update({i: first_nonzero_index})
             # now do a row swap between i and first_nonzero_index
             l_data[[i, first_nonzero_index]] = l_data[[first_nonzero_index, i]]
-            # lower_triangular[[i, first_nonzero_index]] = lower_triangular[[first_nonzero_index, i]]
             alpha11 = l_data[i][j]
         a21 = l_data[i + 1:, j]
         A22 = l_data[i + 1:, j + 1:]
@@ -66,11 +64,10 @@ def get_swap_index(i, j, l_data):
     :param l_data: LHS of the appended matrix
     :return: first index value ( > i ) in column j that is non zero
     """
-    list_col_j = l_data[0:, j].tolist()
-    list_col_j_index = list(range(len(list_col_j)))
-    first_nonzero_index = [index for value, index in tuple(zip(list_col_j, list_col_j_index))
-                           if value != 0 and index > i][0]
-    return first_nonzero_index
+    col_j = l_data[0:, j]
+    for first_nonzero_index in (index for value, index in zip(col_j, range(len(col_j)))
+                                if value != 0 and index > i):
+        return first_nonzero_index
 
 
 def fwd_substitution(lower_triangular, r_data, row_pivots):
