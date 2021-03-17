@@ -64,8 +64,50 @@ def solve_N_queens(board, N, rows_placed, sol_list):
             board[rows_placed][col_index] = 0
     return
 
+def backtrack(N, board, curr_row, queen_stack):
+    stack_full = False
+    if len(queen_stack) == N:
+        stack_full = True
+    curr_col = queen_stack.pop()
+    if not stack_full:
+        curr_row -= 1
+    # If you have reached the last column of first row, you have explored all possibilities
+    if curr_col >= N-1 and curr_row == 0:
+        return -1, -1
+    board[curr_row][curr_col] = 0
+    while curr_col == N - 1 and curr_row > 0:
+        if len(queen_stack) > 0:
+            curr_col = queen_stack.pop()
+            curr_row -= 1
+            board[curr_row][curr_col] = 0
+    curr_col += 1
+    return curr_col, curr_row
+
+def solve_N_queens_stack(board, N, curr_row, curr_col, sol_list):
+    queen_stack = []
+    while curr_col != -1:
+        for col_index in range(curr_col, N, 1):
+            if not is_cell_attacked(board, curr_row, col_index, N):
+                board[curr_row][col_index] = 1
+                queen_stack.append(col_index)
+                if curr_row < N-1:
+                    curr_row += 1
+                    curr_col = 0
+                break
+            # Once you have reached the last column of the current row, check if a valid queen pos has been found
+            if col_index == N-1:
+                try:
+                    queen_stack[curr_row]
+                except IndexError:
+                    curr_col, curr_row = backtrack(N, board, curr_row, queen_stack)
+
+        if len(queen_stack) == N:
+            sol_list.append(board)
+            curr_col, curr_row = backtrack(N, board, curr_row, queen_stack)
+
 N = 8
 board = [[0 for col in range(N)]for row in range(N)]
 sol_list = []
-solve_N_queens(board, N, 0, sol_list)
+#solve_N_queens(board, N, 0, sol_list)
+solve_N_queens_stack(board, N, 0, 0, sol_list)
 print(f"Number of solutions = {len(sol_list)}")
