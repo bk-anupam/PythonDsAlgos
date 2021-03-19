@@ -30,8 +30,8 @@ class EdgeWeightedGraph(abc.ABC):
 
     def _parse_file_load_graph(self, file_name):
         # dir_path = os.path.dirname(os.path.abspath(file_name))
-        # file_path = dir_path + "\\data\\" + file_name
-        data_file = open(file_name, "r")
+        file_path = "./../../../data/" + file_name
+        data_file = open(file_path, "r")
         counter = 0
         for line in data_file:
             line = line.strip("\n")

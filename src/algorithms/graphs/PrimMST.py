@@ -65,6 +65,7 @@ def main():
         ewg = UndirectedEWG(arg)
     else:
         ewg = UndirectedEWG(int_arg)
+    print(ewg)
     prim_mst = PrimMST(ewg)
     for edge in prim_mst.mst:
         print(edge)

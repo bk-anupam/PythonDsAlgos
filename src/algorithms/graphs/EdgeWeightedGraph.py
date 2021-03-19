@@ -12,15 +12,20 @@ class UndirectedEWG(EdgeWeightedGraph):
     def add_edge(self, weighted_edge):
         u = weighted_edge.source
         v = weighted_edge.destination(u)
-
         if u not in self._adj_list:
             self._adj_list[u] = []
         if v not in self._adj_list:
             self._adj_list[v] = []
-
         self._adj_list[u].append(weighted_edge)
         self._adj_list[v].append(weighted_edge)
         self._all_edges.add(weighted_edge)
+
+    def __repr__(self):
+        for key in self._adj_list.keys():
+            val = self._adj_list.get(key)
+            print(str(key) + ":")
+            for item in val:
+                print("\t{}".format(item))
 
     @property
     def vertices(self):

@@ -33,6 +33,6 @@ class WeightedEdge:
     def __hash__(self):
         return hash((self.__first_vertex, self.__second_vertex, self.weight))
 
-    def __str__(self):
+    def __repr__(self):
         return "first_vertex: {}, second_vertex: {}, weight: {}".format(self.__first_vertex,
                                                                         self.__second_vertex, self.weight)
