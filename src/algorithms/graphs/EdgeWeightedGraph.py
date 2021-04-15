@@ -109,13 +109,33 @@ class DijkstraSP:
         return path
 
     def shortest_path_cost(self, vertex):
-        return self.distTo[vertex]
+        return round(self.distTo[vertex], 2)
+
+    @staticmethod
+    def print_spath(path):
+        path_str = ""
+        # path is treated as a stack
+        path.reverse()
+        for counter, item in enumerate(path):
+            if counter == 0 and len(path) > 1:
+                path_str += str(item.source) + "->" + str(item.destination(item.source)) + "->"
+            elif counter == 0 and len(path) == 1:
+                path_str += str(item.source) + "->" + str(item.destination(item.source))
+            elif counter == len(path) - 1:
+                path_str += str(item.destination(item.source))
+            else:
+                path_str += str(item.destination(item.source)) + "->"
+        return path_str
 
 
 def main():
     args = sys.argv[1]
     directed_ewg = DirectedEWG(args)
     dijkstra_sp = DijkstraSP(directed_ewg, 0)
+    for vertex in directed_ewg.vertices:
+        path_to_vertex = dijkstra_sp.path_to(vertex)
+        print(f"Path to {vertex} from 0 => {dijkstra_sp.print_spath(path_to_vertex)} : "
+              f"Cost = {dijkstra_sp.shortest_path_cost(vertex)}")
     print('completed')
 
 
