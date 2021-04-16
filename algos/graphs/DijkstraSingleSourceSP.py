@@ -20,7 +20,7 @@ class DijkstraSP:
         self.__initialize_pq()
         self.distTo[source_vertex] = 0.0
         self.__visit(source_vertex)
-        while len(self.__visited_vertices) != ewg.get_num_vertices():
+        while len(self.__unexplored_vertex_pq) > 0:
             min_weight_vertex = heapq.heappop(self.__unexplored_vertex_pq)
             self.__visit(min_weight_vertex.source)
 
@@ -32,16 +32,27 @@ class DijkstraSP:
 
     def __visit(self, vertex):
         self.__visited_vertices.append(vertex)
-        for visited_vertex in self.__visited_vertices:
-            for crossing_edge in [edge for edge in self._ewg.get_out_edges(visited_vertex)
-                                  if is_directed_crossing_edge(edge.source, edge.destination,
-                                                               self.__visited_vertices)]:
-                destination_vertex = crossing_edge.destination(visited_vertex)
-                vertex_new_cost = self.distTo[crossing_edge.source] + crossing_edge.weight
-                if self.distTo[destination_vertex] > vertex_new_cost:
-                    heapq.heappush(self.__unexplored_vertex_pq, WeightedEdge(destination_vertex, -1, vertex_new_cost))
-                    self.distTo[destination_vertex] = vertex_new_cost
-                    self.edgeTo[destination_vertex] = crossing_edge
+        #for visited_vertex in self.__visited_vertices:
+        for crossing_edge in [edge for edge in self._ewg.get_out_edges(vertex)
+                              if is_directed_crossing_edge(edge.source, edge.destination,
+                                                           self.__visited_vertices)]:
+            destination_vertex = crossing_edge.destination(vertex)
+            vertex_new_cost = self.distTo[crossing_edge.source] + crossing_edge.weight
+            if self.distTo[destination_vertex] > vertex_new_cost:
+                # delete the vertex from pq and reinsert with new cost
+                # Note deleting item from heapq takes O(n) time as you need to do a linear scan of all items
+                for counter, item in enumerate(self.__unexplored_vertex_pq):
+                    if item == WeightedEdge(destination_vertex, -1, self.distTo[destination_vertex]):
+                        # swap the item with item at 0th index
+                        self.__unexplored_vertex_pq[counter], self.__unexplored_vertex_pq[0] = self.__unexplored_vertex_pq[0], self.__unexplored_vertex_pq[counter]
+                        # pop the item at 0th index
+                        popped = heapq.heappop(self.__unexplored_vertex_pq)
+                        # restore the heap invariant
+                        heapq.heapify(self.__unexplored_vertex_pq)
+                # reinsert the vertex with new cost
+                heapq.heappush(self.__unexplored_vertex_pq, WeightedEdge(destination_vertex, -1, vertex_new_cost))
+                self.distTo[destination_vertex] = vertex_new_cost
+                self.edgeTo[destination_vertex] = crossing_edge
 
     def has_path_to(self, vertex):
         return True if vertex in self.__visited_vertices else False
